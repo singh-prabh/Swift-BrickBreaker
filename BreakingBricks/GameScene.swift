@@ -5,24 +5,30 @@
 //  Created by Joseph Janiga on 6/8/14.
 //  Copyright (c) 2014 Joseph Janiga. =]    All rights reserved.
 
+import UIKit
+
+func colorize (hex: Int, alpha: Double = 1.0) -> UIColor {
+    let red = Double((hex & 0xFF0000) >> 16) / 255.0
+    let green = Double((hex & 0xFF00) >> 8) / 255.0
+    let blue = Double((hex & 0xFF)) / 255.0
+    var color: UIColor = UIColor( red: Float(red), green: Float(green), blue: Float(blue), alpha:Float(alpha) )
+    return color
+}
 
 
 import SpriteKit
 
 class GameScene: SKScene {
     
-
     var paddle : SKSpriteNode
-    
-    init(coder aDecoder: NSCoder!) {
 
+    init(coder aDecoder: NSCoder!) {
         paddle = SKSpriteNode(imageNamed:"paddle")
         super.init(coder: aDecoder)
     }
     
-    
     init (size: CGSize) {
-        self.paddle = SKSpriteNode(imageNamed:"paddle")
+        paddle = SKSpriteNode(imageNamed:"paddle")
         super.init(size: size)
     }
     
@@ -30,17 +36,17 @@ class GameScene: SKScene {
     // this gets triggered automtically when the scene is presented by the view
     // similar to Event.ADDED_TO_STAGE
     override func didMoveToView(view: SKView) {
+
+        addBackground(size)
         
-        // setup the world and background
-        self.backgroundColor = SKColor.blackColor()
+        
+        //self.backgroundColor = colorize( 0x181818, alpha:1.0)
         self.physicsBody = SKPhysicsBody(edgeLoopFromRect: self.frame)
         self.physicsWorld.gravity = CGVectorMake(0,0)
         
-        
         addBall(size)
-        
-        addPlayer(size)
-        addBricks(size)
+        //addPlayer(size)
+        //addBricks(size)
         
     }
     
@@ -52,8 +58,19 @@ class GameScene: SKScene {
         var myPoint : CGPoint = CGPointMake(size.width/2, size.height/2+200)
         ball.position = myPoint
         ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.frame.size.width/2)
-        var ballVector :CGVector = CGVectorMake(11,-33)
-
+        var ballVector :CGVector = CGVectorMake(9,-22)
+        
+        var plasma : SKLightNode = SKLightNode()
+        plasma.enabled = true
+        
+        plasma.categoryBitMask = 1
+        plasma.falloff = 1
+        plasma.ambientColor = SKColor.whiteColor()
+        plasma.lightColor = SKColor.whiteColor()
+        plasma.position = CGPointMake(0,0)
+        
+        self.addChild(plasma)
+        
         self.addChild(ball)
         ball.physicsBody.applyImpulse(ballVector)
         ball.physicsBody.friction = 0
@@ -68,20 +85,59 @@ class GameScene: SKScene {
         paddle.physicsBody = SKPhysicsBody(rectangleOfSize: paddle.frame.size)
         paddle.physicsBody.dynamic = false
         
+        paddle.shadowCastBitMask = 1
+        paddle.lightingBitMask = 1
+        
         addChild(paddle)
     
     }
     
+    
+    func addBackground (size: CGSize){
+        
+        var h = 256
+        var w = 256
+        
+        for (var cols = 0; cols < 3; cols++){
+            for (var rows = 0; rows < 4; rows++){
+                
+                var xPos = Float(cols * h)
+                var yPos = Float(rows * w)
+                
+                // setup the world and background
+                var bg : SKSpriteNode
+                var tex = SKTexture(imageNamed: "CorrugatedSharp-ColorMap" )
+                bg = SKSpriteNode(texture: tex)
+                
+                bg.lightingBitMask = 1
+                //bg.shadowedBitMask = 1
+                
+                bg.normalTexture = SKTexture(imageNamed: "CorrugatedSharp-ColorMap" ).textureByGeneratingNormalMap()
+                self.addChild(bg)
+                
+                bg.position = CGPointMake(xPos, yPos)
+
+            }
+        }
+        
+    }
+    
+    
+    
     func addBricks (size: CGSize){
-        for (var rows = 0; rows < 5; rows++){
-            for (var i = 0; i < 7 ; i++){
+        for (var rows = 0; rows < 1; rows++){
+            for (var i = 0; i < 5 ; i++){
+                
                 var brick: SKSpriteNode = SKSpriteNode(imageNamed: "brick")
                 brick.physicsBody = SKPhysicsBody(rectangleOfSize: brick.frame.size)
                 
-                var xPos = size.width/8 * Float(i + 1)
-                var yPos = size.height - Float(50 * rows) - 50
+                var xPos = size.width/6 * Float(i + 1)
+                var yPos = size.height - Float(80 * rows) - 150
                 
                 brick.physicsBody.dynamic = false
+                
+                brick.shadowCastBitMask = 1
+                brick.lightingBitMask = 1
                 
                 brick.position = CGPointMake(xPos, yPos)
                 self.addChild(brick)

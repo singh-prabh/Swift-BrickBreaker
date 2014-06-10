@@ -7,11 +7,11 @@
 //
 
 import UIKit
-import SpriteKit
+//import SpriteKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-                            
+    
     var window: UIWindow?
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: NSDictionary?) -> Bool {
