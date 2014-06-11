@@ -7,6 +7,8 @@
 
 import UIKit
 
+
+// colorize function takes HEX and Alpha converts to UIColor object
 func colorize (hex: Int, alpha: Double = 1.0) -> UIColor {
     let red = Double((hex & 0xFF0000) >> 16) / 255.0
     let green = Double((hex & 0xFF00) >> 8) / 255.0
@@ -41,7 +43,9 @@ class GameScene: SKScene {
     // similar to Event.ADDED_TO_STAGE
     override func didMoveToView(view: SKView) {
 
+        // blue background color
         self.backgroundColor = colorize( 0x003342, alpha:1.0)
+        
         
         self.shouldRasterize = false
         
