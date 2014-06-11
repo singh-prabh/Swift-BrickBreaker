@@ -21,14 +21,18 @@ import SpriteKit
 class GameScene: SKScene {
     
     var paddle : SKSpriteNode
+    var ball : SKSpriteNode
+    var ballVector :CGVector = CGVectorMake(9,-22)
 
     init(coder aDecoder: NSCoder!) {
         paddle = SKSpriteNode(imageNamed:"paddle")
+        ball = SKSpriteNode(imageNamed: "ball")
         super.init(coder: aDecoder)
     }
     
     init (size: CGSize) {
         paddle = SKSpriteNode(imageNamed:"paddle")
+        ball = SKSpriteNode(imageNamed: "ball")
         super.init(size: size)
     }
     
@@ -37,23 +41,24 @@ class GameScene: SKScene {
     // similar to Event.ADDED_TO_STAGE
     override func didMoveToView(view: SKView) {
 
-        addBackground(size)
+        self.backgroundColor = colorize( 0x003342, alpha:1.0)
         
+        self.shouldRasterize = false
         
-        //self.backgroundColor = colorize( 0x181818, alpha:1.0)
+        //addBackground(size)
+        
+ 
         self.physicsBody = SKPhysicsBody(edgeLoopFromRect: self.frame)
         self.physicsWorld.gravity = CGVectorMake(0,0)
         
         addBall(size)
-        //addPlayer(size)
-        //addBricks(size)
+        addPlayer(size)
+        addBricks(size)
         
     }
     
     func addBall (size:CGSize){
         
-        var ball : SKSpriteNode
-        ball = SKSpriteNode(imageNamed: "ball")
         // setup and add the ball with physics
         var myPoint : CGPoint = CGPointMake(size.width/2, size.height/2+200)
         ball.position = myPoint
@@ -64,12 +69,16 @@ class GameScene: SKScene {
         plasma.enabled = true
         
         plasma.categoryBitMask = 1
-        plasma.falloff = 1
-        plasma.ambientColor = SKColor.whiteColor()
+        plasma.falloff = 0.5
+        plasma.ambientColor = colorize( 0xFFFFFF, alpha:0.5)
         plasma.lightColor = SKColor.whiteColor()
-        plasma.position = CGPointMake(0,0)
+        plasma.position = CGPointMake(size.width/2,0)
         
         self.addChild(plasma)
+        
+        ball.shadowedBitMask = 1
+        ball.shadowCastBitMask = 1
+        ball.lightingBitMask = 1
         
         self.addChild(ball)
         ball.physicsBody.applyImpulse(ballVector)
@@ -85,6 +94,7 @@ class GameScene: SKScene {
         paddle.physicsBody = SKPhysicsBody(rectangleOfSize: paddle.frame.size)
         paddle.physicsBody.dynamic = false
         
+        paddle.shadowedBitMask = 1
         paddle.shadowCastBitMask = 1
         paddle.lightingBitMask = 1
         
@@ -99,7 +109,7 @@ class GameScene: SKScene {
         var w = 256
         
         for (var cols = 0; cols < 3; cols++){
-            for (var rows = 0; rows < 4; rows++){
+            for (var rows = 0; rows < 5; rows++){
                 
                 var xPos = Float(cols * h)
                 var yPos = Float(rows * w)
@@ -109,8 +119,9 @@ class GameScene: SKScene {
                 var tex = SKTexture(imageNamed: "CorrugatedSharp-ColorMap" )
                 bg = SKSpriteNode(texture: tex)
                 
+                bg.shadowedBitMask = 1
+                bg.shadowCastBitMask = 1
                 bg.lightingBitMask = 1
-                //bg.shadowedBitMask = 1
                 
                 bg.normalTexture = SKTexture(imageNamed: "CorrugatedSharp-ColorMap" ).textureByGeneratingNormalMap()
                 self.addChild(bg)
@@ -125,7 +136,7 @@ class GameScene: SKScene {
     
     
     func addBricks (size: CGSize){
-        for (var rows = 0; rows < 1; rows++){
+        for (var rows = 0; rows < 3; rows++){
             for (var i = 0; i < 5 ; i++){
                 
                 var brick: SKSpriteNode = SKSpriteNode(imageNamed: "brick")
