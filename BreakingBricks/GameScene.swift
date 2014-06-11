@@ -25,6 +25,12 @@ class GameScene: SKScene {
     var paddle : SKSpriteNode
     var ball : SKSpriteNode
     var ballVector :CGVector = CGVectorMake(9,-22)
+    
+    let ballCategory    = 0x1          // INT 1 - 00000000000000000000000000000001
+    let brickCategory   = 0x1 << 1     // INT 2 - 00000000000000000000000000000010
+    let paddleCategory  = 0x1 << 2     // INT 4 - 00000000000000000000000000000100
+    let edgeCategory    = 0x1 << 3     // INT 8 - 00000000000000000000000000001000
+    
 
     init(coder aDecoder: NSCoder!) {
         paddle = SKSpriteNode(imageNamed:"paddle")
