@@ -18,6 +18,9 @@
 		8B2F222A194559140058AC2D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B2F2228194559140058AC2D /* Main.storyboard */; };
 		8B2F222C194559140058AC2D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B2F222B194559140058AC2D /* Images.xcassets */; };
 		8B2F2238194559140058AC2D /* BreakingBricksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2F2237194559140058AC2D /* BreakingBricksTests.swift */; };
+		8B7EFDD119493057008E5744 /* blip.caf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7EFDCE19493057008E5744 /* blip.caf */; };
+		8B7EFDD219493057008E5744 /* brickhit.caf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7EFDCF19493057008E5744 /* brickhit.caf */; };
+		8B7EFDD319493057008E5744 /* gameover.caf in Resources */ = {isa = PBXBuildFile; fileRef = 8B7EFDD019493057008E5744 /* gameover.caf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +49,9 @@
 		8B2F2231194559140058AC2D /* BreakingBricksTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BreakingBricksTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B2F2236194559140058AC2D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8B2F2237194559140058AC2D /* BreakingBricksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreakingBricksTests.swift; sourceTree = "<group>"; };
+		8B7EFDCE19493057008E5744 /* blip.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = blip.caf; sourceTree = "<group>"; };
+		8B7EFDCF19493057008E5744 /* brickhit.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = brickhit.caf; sourceTree = "<group>"; };
+		8B7EFDD019493057008E5744 /* gameover.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = gameover.caf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +78,9 @@
 				2A8128FF1947A1360065BAD5 /* gray-bg.png */,
 				2A8129011947B2460065BAD5 /* CorrugatedSharp-ColorMap.png */,
 				2A8129021947B2460065BAD5 /* CorrugatedSharp-NormalMap.png */,
+				8B7EFDCE19493057008E5744 /* blip.caf */,
+				8B7EFDCF19493057008E5744 /* brickhit.caf */,
+				8B7EFDD019493057008E5744 /* gameover.caf */,
 				2A8128FD1947997A0065BAD5 /* bricks-bg.png */,
 				8B2F221D194559140058AC2D /* BreakingBricks */,
 				8B2F2234194559140058AC2D /* BreakingBricksTests */,
@@ -209,11 +218,14 @@
 			files = (
 				2A8128FE1947997A0065BAD5 /* bricks-bg.png in Resources */,
 				2A8129001947A1360065BAD5 /* gray-bg.png in Resources */,
+				8B7EFDD219493057008E5744 /* brickhit.caf in Resources */,
 				8B2F222C194559140058AC2D /* Images.xcassets in Resources */,
 				8B2F2223194559140058AC2D /* GameScene.sks in Resources */,
 				8B2F222A194559140058AC2D /* Main.storyboard in Resources */,
 				2A8129041947B2460065BAD5 /* CorrugatedSharp-NormalMap.png in Resources */,
 				2A8129031947B2460065BAD5 /* CorrugatedSharp-ColorMap.png in Resources */,
+				8B7EFDD319493057008E5744 /* gameover.caf in Resources */,
+				8B7EFDD119493057008E5744 /* blip.caf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
