@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Joseph Janiga. =]    All rights reserved.
 
 import UIKit
+import Foundation
+
 
 // colorize function takes HEX and Alpha converts to UIColor object
 
@@ -20,10 +22,7 @@ func colorize (hex: Int, alpha: Double = 1.0) -> UIColor {
 
 import SpriteKit
 
-
 class GameScene: SKScene, SKPhysicsContactDelegate {
-    
-
     
     var paddle : SKSpriteNode
     var ball : SKSpriteNode
@@ -56,9 +55,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         var bottomEdge: SKNode = SKNode()
         bottomEdge.physicsBody = SKPhysicsBody(edgeFromPoint: CGPointMake(0, 1), toPoint: CGPointMake(size.width, 1))
-        
         bottomEdge.physicsBody.categoryBitMask = bottomEdgeCategory
-        
         self.addChild(bottomEdge)
         
     }
@@ -73,6 +70,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //addBackground(size)
         
+
+        
+        
         // not sure if this effects performance yet...
         self.shouldRasterize = false
  
@@ -86,13 +86,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addPlayer(size)
         addBricks(size)
         addBottomEdge(size)
+        addLight(size)
         
     }
     
     func addBall (size:CGSize){
         
         // setup and add the ball with physics
-        var myPoint : CGPoint = CGPointMake(size.width/2, size.height/2+200)
+        var myPoint : CGPoint = CGPointMake(size.width/2, size.height-20)
         ball.position = myPoint
         ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.frame.size.width/2)
         var ballVector :CGVector = CGVectorMake(9,-22)
@@ -100,8 +101,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ball.physicsBody.categoryBitMask = ballCategory
         ball.physicsBody.contactTestBitMask = brickCategory | paddleCategory | bottomEdgeCategory
         
+        self.addChild(ball)
+        ball.physicsBody.applyImpulse(ballVector)
+        ball.physicsBody.friction = 0
+        ball.physicsBody.linearDamping = 0
+        ball.physicsBody.restitution = 1
         
-        // setting the light node
+        var magic :SKEmitterNode = NSKeyedUnarchiver.unarchiveObjectWithFile(NSBundle.mainBundle().pathForResource("Magic", ofType: "sks")) as SKEmitterNode
+        
+        magic.advanceSimulationTime(10)
+        
+        ball.addChild(magic)
+        
+        
+    }
+    
+    func addLight (size:CGSize){
+        
+        // Load resources for iOS 8 or later
         var plasma : SKLightNode = SKLightNode()
         plasma.enabled = true
         
@@ -109,21 +126,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         plasma.falloff = 0.5
         plasma.ambientColor = colorize( 0xFFFFFF, alpha:0.5)
         plasma.lightColor = SKColor.whiteColor()
-        plasma.position = CGPointMake(size.width/2,0)
+        plasma.position = CGPointMake(size.width/2,size.height-50)
         
         self.addChild(plasma)
         
+        //ball.shadowedBitMask = 1
+        //ball.shadowCastBitMask = 1
+        //ball.lightingBitMask = 1
         
-        
-        ball.shadowedBitMask = 1
-        ball.shadowCastBitMask = 1
-        ball.lightingBitMask = 1
-        
-        self.addChild(ball)
-        ball.physicsBody.applyImpulse(ballVector)
-        ball.physicsBody.friction = 0
-        ball.physicsBody.linearDamping = 0
-        ball.physicsBody.restitution = 1
+        paddle.shadowedBitMask = 1
+        paddle.shadowCastBitMask = 1
+        paddle.lightingBitMask = 1
         
     }
     
@@ -132,11 +145,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         paddle.position = CGPointMake(size.width/2, 100)
         paddle.physicsBody = SKPhysicsBody(rectangleOfSize: paddle.frame.size)
         paddle.physicsBody.dynamic = false
-        
-        paddle.shadowedBitMask = 1
-        paddle.shadowCastBitMask = 1
-        paddle.lightingBitMask = 1
-        
+
         paddle.physicsBody.categoryBitMask = paddleCategory
         
         addChild(paddle)
@@ -159,10 +168,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 var bg : SKSpriteNode
                 var tex = SKTexture(imageNamed: "CorrugatedSharp-ColorMap" )
                 bg = SKSpriteNode(texture: tex)
-                
+            
+
                 bg.shadowedBitMask = 1
                 bg.shadowCastBitMask = 1
                 bg.lightingBitMask = 1
+
                 
                 bg.normalTexture = SKTexture(imageNamed: "CorrugatedSharp-ColorMap" ).textureByGeneratingNormalMap()
                 self.addChild(bg)
@@ -177,22 +188,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     func addBricks (size: CGSize){
-        for (var rows = 0; rows < 3; rows++){
-            for (var i = 0; i < 5 ; i++){
+        
+        //println(" the input size \(size)")
+        
+        var maxRows = 2
+        var maxCols = 6
+        
+        for (var rows = 0; rows < maxRows; rows++){
+            for (var i = 0; i < maxCols ; i++){
                 
                 var brick: SKSpriteNode = SKSpriteNode(imageNamed: "brick")
                 brick.physicsBody = SKPhysicsBody(rectangleOfSize: brick.frame.size)
                 
-                var xPos = size.width/6 * Float(i + 1)
-                var yPos = size.height - Float(80 * rows) - 150
+                var xPos = size.width/Float(maxCols+1) * Float(i + 1)
+                var yPos = size.height - Float(80 * rows) - 100
                 
                 brick.physicsBody.dynamic = false
                 brick.physicsBody.categoryBitMask = brickCategory
-               
+                  
                 brick.shadowCastBitMask = 1
                 brick.lightingBitMask = 1
                 
                 brick.position = CGPointMake(xPos, yPos)
+                
+                //println("\(brick.position)")
+                
                 self.addChild(brick)
             }
         }
@@ -241,24 +261,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.runAction(playSFXBrick)
         }
         
+        if ( notTheBall.categoryBitMask == edgeCategory ) {
+            
+        }
+        
         if ( notTheBall.categoryBitMask == bottomEdgeCategory ){
             
-            var label : SKLabelNode = SKLabelNode(fontNamed: "Futura Medium")
-            label.text = "LOSER"
-            label.fontColor = colorize(0xFF0000, alpha: 1.0)
-            label.fontSize = 50
-            
-            label.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
-            
-            self.addChild(label)
-            
-            ball.removeFromParent()
+            var end : EndScene = EndScene.sceneWithSize(size)
+            self.view.presentScene(end, transition: SKTransition.doorsCloseHorizontalWithDuration(0.5))
             
         }
 
         
         if ( notTheBall.categoryBitMask == paddleCategory ){
+            
             self.runAction(playSFXBlip)
+            
+            /*
+            println("\(self.children.count) and \(self.frame.size)")
+            
+            if ( self.children.count <= 4 ){
+                addBricks(self.frame.size)
+            }
+            */
+            
         }
         
     }
