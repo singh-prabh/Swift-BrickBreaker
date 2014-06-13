@@ -30,7 +30,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var playSFXBlip : SKAction = SKAction.playSoundFileNamed("blip.caf", waitForCompletion: false)
     var playSFXBrick : SKAction = SKAction.playSoundFileNamed("brickhit.caf", waitForCompletion: false)
     var label : SKLabelNode = SKLabelNode(fontNamed: "Futura Medium")
-    var staticSize : CGSize = CGSizeMake(0.0, 0.0)
+    //var staticSize : CGSize = CGSizeMake(0.0, 0.0)
    
     
     let AD = UIApplication.sharedApplication().delegate as AppDelegate
@@ -71,8 +71,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // similar to Event.ADDED_TO_STAGE
     override func didMoveToView(view: SKView) {
 
-        staticSize = CGSizeMake(size.width, size.height)
-
+        //staticSize = CGSizeMake(size.width, size.height)
         
         // blue background color
         self.backgroundColor = colorize( 0x003342, alpha:1.0)
@@ -269,6 +268,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         /* Called before each frame is rendered */
     }
     
+    
     func didBeginContact(contact: SKPhysicsContact!){
         
         var notTheBall : SKPhysicsBody
@@ -307,10 +307,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             self.runAction(playSFXBlip)
             
-            println("\(self.children.count) and \(staticSize)")
+            //println("\(self.children.count) and \(staticSize)")
             
             if ( self.children.count <= 5 ){
-                addBricks(staticSize)
+                addBricks(self.frame.size)
             }
             
         }
