@@ -116,7 +116,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         var myPoint : CGPoint = CGPointMake(size.width/2, 120)
         ball.position = myPoint
         ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.frame.size.width/2)
-        var ballVector :CGVector = CGVectorMake(0,33)
+        var ballVector :CGVector = CGVectorMake(0,11)
         
         ball.physicsBody.categoryBitMask = ballCategory
         ball.physicsBody.contactTestBitMask = brickCategory | paddleCategory | bottomEdgeCategory
@@ -209,21 +209,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func addBricks (size: CGSize){
         
-        println(" the input parameter size: \(size)")
+        //println(" the input parameter size: \(size)")
         
         var maxRows = 1
         var maxCols = 1
         var xPos : CGFloat
         var yPos : CGFloat
         
-        for (var rows = 0; rows < maxRows; rows++){
-            for (var i = 0; i < maxCols ; i++){
+        //for (var rows = 0; rows < maxRows; rows++){
+        //    for (var i = 0; i < maxCols ; i++){
                 
                 var brick: SKSpriteNode = SKSpriteNode(imageNamed: "brick")
                 brick.physicsBody = SKPhysicsBody(rectangleOfSize: brick.frame.size)
                 
-                xPos = CGFloat(size.width) / CGFloat(maxCols+1) * CGFloat(i + 1)
-                yPos = CGFloat(size.height) - CGFloat(80 * rows) - 100.0
+                brick.name = String(AD.score)
+                
+                //xPos = CGFloat(size.width) / CGFloat(maxCols+1) * CGFloat(i + 1)
+                //yPos = CGFloat(size.height) - CGFloat(80 * rows) - 100.0
                 
                 brick.physicsBody.dynamic = false
                 brick.physicsBody.categoryBitMask = brickCategory
@@ -232,14 +234,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 brick.lightingBitMask = 1
                 
                 //brick.position = CGPointMake(CGFloat(xPos), CGFloat(yPos))
-                brick.position = CGPointMake(320.0, 1036.0)
+                var newPoint = CGPointMake(320.0, 1036.0)
+                brick.position = newPoint
                 
-                println("Brick position - xpos: \(xPos), ypos: \(yPos) || overall:\(brick.position)")
+                //println("Brick position - xpos: \(xPos), ypos: \(yPos) || overall:\(brick.position)")
                 
                 self.addChild(brick)
                 
-            }
-        }
+         //   }
+        //}
 
     }
     
@@ -270,6 +273,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     func didBeginContact(contact: SKPhysicsContact!){
+        
+        
+        //println(self)
+        
         
         var notTheBall : SKPhysicsBody
         
@@ -310,8 +317,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //println("\(self.children.count) and \(staticSize)")
             
             if ( self.children.count <= 5 ){
-                addBricks(self.frame.size)
+                self.addBricks(self.frame.size)
             }
+            
+            println(self)
+            println(self.children)
             
         }
         
