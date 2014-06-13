@@ -24,6 +24,8 @@ class EndScene: SKScene {
     // similar to Event.ADDED_TO_STAGE
     override func didMoveToView(view: SKView) {
         
+        let AD = UIApplication.sharedApplication().delegate as AppDelegate
+        
         self.runAction(playSFXGameOver)
         
         // background color
@@ -37,9 +39,8 @@ class EndScene: SKScene {
 
         self.addChild(label)
         
-        
         var label2 : SKLabelNode = SKLabelNode(fontNamed: "Futura Medium")
-        label2.text = "touch to try again"
+        label2.text = "touch to try again - \(AD.score)"
         label2.fontColor = SKColor.whiteColor()
         label2.fontSize = 33
         label2.position = CGPointMake(CGRectGetMidX(self.frame), -100)

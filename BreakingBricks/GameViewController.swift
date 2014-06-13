@@ -24,12 +24,14 @@ extension SKNode {
     }
 }
 
-class GameViewController: UIViewController {
 
+class GameViewController: UIViewController {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         if let scene = GameScene.unarchiveFromFile("GameScene") as? GameScene {
+            
             // Configure the view.
             let skView = self.view as SKView
             skView.showsFPS = true
@@ -43,6 +45,7 @@ class GameViewController: UIViewController {
             scene.scaleMode = .AspectFit
             
             skView.presentScene(scene)
+            
         }
     }
     

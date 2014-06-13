@@ -15,7 +15,7 @@ func colorize (hex: Int, alpha: Double = 1.0) -> UIColor {
     let red = Double((hex & 0xFF0000) >> 16) / 255.0
     let green = Double((hex & 0xFF00) >> 8) / 255.0
     let blue = Double((hex & 0xFF)) / 255.0
-    var color: UIColor = UIColor( red: Float(red), green: Float(green), blue: Float(blue), alpha:Float(alpha) )
+    var color: UIColor = UIColor( red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: CGFloat(alpha) )
     return color
 }
 
@@ -29,6 +29,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var ballVector :CGVector = CGVectorMake(9,-22)
     var playSFXBlip : SKAction = SKAction.playSoundFileNamed("blip.caf", waitForCompletion: false)
     var playSFXBrick : SKAction = SKAction.playSoundFileNamed("brickhit.caf", waitForCompletion: false)
+    var label : SKLabelNode = SKLabelNode(fontNamed: "Futura Medium")
+    var staticSize : CGSize = CGSizeMake(0.0, 0.0)
+   
+    
+    let AD = UIApplication.sharedApplication().delegate as AppDelegate
+    
     
     //bitwise
     let ballCategory : UInt32       = 0x1          // INT 1 - 00000000000000000000000000000001
@@ -65,13 +71,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // similar to Event.ADDED_TO_STAGE
     override func didMoveToView(view: SKView) {
 
+        staticSize = CGSizeMake(size.width, size.height)
+
+        
         // blue background color
         self.backgroundColor = colorize( 0x003342, alpha:1.0)
         
         //addBackground(size)
         
-
+        AD.score = 0
         
+        var labelNode = SKSpriteNode()
+        
+        label.text = "\(AD.score)"
+        label.fontColor = SKColor.whiteColor()
+        label.fontSize = 512
+        label.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame)-200)
+        label.alpha = 0.05
+        //label.physicsBody = SKPhysicsBody(rectangleOfSize: label.frame.size)
+        
+        labelNode.addChild(label)
+        
+        self.addChild(labelNode)
         
         // not sure if this effects performance yet...
         self.shouldRasterize = false
@@ -93,10 +114,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func addBall (size:CGSize){
         
         // setup and add the ball with physics
-        var myPoint : CGPoint = CGPointMake(size.width/2, size.height-20)
+        var myPoint : CGPoint = CGPointMake(size.width/2, 120)
         ball.position = myPoint
         ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.frame.size.width/2)
-        var ballVector :CGVector = CGVectorMake(9,-22)
+        var ballVector :CGVector = CGVectorMake(0,33)
         
         ball.physicsBody.categoryBitMask = ballCategory
         ball.physicsBody.contactTestBitMask = brickCategory | paddleCategory | bottomEdgeCategory
@@ -178,7 +199,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 bg.normalTexture = SKTexture(imageNamed: "CorrugatedSharp-ColorMap" ).textureByGeneratingNormalMap()
                 self.addChild(bg)
                 
-                bg.position = CGPointMake(xPos, yPos)
+                bg.position = CGPointMake(CGFloat(xPos), CGFloat(yPos))
 
             }
         }
@@ -189,10 +210,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func addBricks (size: CGSize){
         
-        //println(" the input size \(size)")
+        println(" the input parameter size: \(size)")
         
-        var maxRows = 2
-        var maxCols = 6
+        var maxRows = 1
+        var maxCols = 1
+        var xPos : CGFloat
+        var yPos : CGFloat
         
         for (var rows = 0; rows < maxRows; rows++){
             for (var i = 0; i < maxCols ; i++){
@@ -200,8 +223,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 var brick: SKSpriteNode = SKSpriteNode(imageNamed: "brick")
                 brick.physicsBody = SKPhysicsBody(rectangleOfSize: brick.frame.size)
                 
-                var xPos = size.width/Float(maxCols+1) * Float(i + 1)
-                var yPos = size.height - Float(80 * rows) - 100
+                xPos = CGFloat(size.width) / CGFloat(maxCols+1) * CGFloat(i + 1)
+                yPos = CGFloat(size.height) - CGFloat(80 * rows) - 100.0
                 
                 brick.physicsBody.dynamic = false
                 brick.physicsBody.categoryBitMask = brickCategory
@@ -209,11 +232,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 brick.shadowCastBitMask = 1
                 brick.lightingBitMask = 1
                 
-                brick.position = CGPointMake(xPos, yPos)
+                //brick.position = CGPointMake(CGFloat(xPos), CGFloat(yPos))
+                brick.position = CGPointMake(320.0, 1036.0)
                 
-                //println("\(brick.position)")
+                println("Brick position - xpos: \(xPos), ypos: \(yPos) || overall:\(brick.position)")
                 
                 self.addChild(brick)
+                
             }
         }
 
@@ -256,9 +281,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if ( notTheBall.categoryBitMask == brickCategory ) {
+           
             // remove the brick
+            AD.score++
+            label.text = "\(AD.score)"
+            
             notTheBall.node.removeFromParent()
             self.runAction(playSFXBrick)
+
         }
         
         if ( notTheBall.categoryBitMask == edgeCategory ) {
@@ -277,13 +307,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             self.runAction(playSFXBlip)
             
-            /*
-            println("\(self.children.count) and \(self.frame.size)")
+            println("\(self.children.count) and \(staticSize)")
             
-            if ( self.children.count <= 4 ){
-                addBricks(self.frame.size)
+            if ( self.children.count <= 5 ){
+                addBricks(staticSize)
             }
-            */
             
         }
         
