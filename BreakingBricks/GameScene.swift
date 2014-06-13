@@ -115,24 +115,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // setup and add the ball with physics
         var myPoint : CGPoint = CGPointMake(size.width/2, 120)
         ball.position = myPoint
+        
+        var randomNumber = arc4random_uniform(50) - 25
+        var ballVector : CGVector = CGVectorMake( CGFloat(randomNumber), 15 )
+        
+        
+        self.addChild(ball)
+        
         ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.frame.size.width/2)
-        var ballVector :CGVector = CGVectorMake(0,11)
         
         ball.physicsBody.categoryBitMask = ballCategory
         ball.physicsBody.contactTestBitMask = brickCategory | paddleCategory | bottomEdgeCategory
         
-        self.addChild(ball)
         ball.physicsBody.applyImpulse(ballVector)
         ball.physicsBody.friction = 0
         ball.physicsBody.linearDamping = 0
         ball.physicsBody.restitution = 1
         
-        var magic :SKEmitterNode = NSKeyedUnarchiver.unarchiveObjectWithFile(NSBundle.mainBundle().pathForResource("Magic", ofType: "sks")) as SKEmitterNode
+
         
-        magic.advanceSimulationTime(10)
-        
-        ball.addChild(magic)
-        
+        //var magic :SKEmitterNode = NSKeyedUnarchiver.unarchiveObjectWithFile(NSBundle.mainBundle().pathForResource("Magic", ofType: "sks")) as SKEmitterNode
+        //magic.advanceSimulationTime(10)
+        //ball.addChild(magic)
         
     }
     
@@ -211,38 +215,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //println(" the input parameter size: \(size)")
         
-        var maxRows = 1
-        var maxCols = 1
+        var maxRows = 3
+        var maxCols = 6
         var xPos : CGFloat
         var yPos : CGFloat
         
-        //for (var rows = 0; rows < maxRows; rows++){
-        //    for (var i = 0; i < maxCols ; i++){
+        for (var rows = 0; rows < maxRows; rows++){
+            for (var i = 0; i < maxCols ; i++){
                 
                 var brick: SKSpriteNode = SKSpriteNode(imageNamed: "brick")
-                brick.physicsBody = SKPhysicsBody(rectangleOfSize: brick.frame.size)
                 
                 brick.name = String(AD.score)
                 
-                //xPos = CGFloat(size.width) / CGFloat(maxCols+1) * CGFloat(i + 1)
-                //yPos = CGFloat(size.height) - CGFloat(80 * rows) - 100.0
-                
-                brick.physicsBody.dynamic = false
-                brick.physicsBody.categoryBitMask = brickCategory
+                xPos = CGFloat(size.width) / CGFloat(maxCols+1) * CGFloat(i + 1)
+                yPos = CGFloat(size.height) - CGFloat(80 * rows) - 50.0
+                var newPoint = CGPointMake(xPos, yPos)
+                brick.position = newPoint
                   
                 brick.shadowCastBitMask = 1
                 brick.lightingBitMask = 1
                 
                 //brick.position = CGPointMake(CGFloat(xPos), CGFloat(yPos))
-                var newPoint = CGPointMake(320.0, 1036.0)
-                brick.position = newPoint
-                
                 //println("Brick position - xpos: \(xPos), ypos: \(yPos) || overall:\(brick.position)")
-                
+                //println("SELF LOG FROM ADDBRICKS METHOD CALL: \(self) \n")
+        
                 self.addChild(brick)
-                
-         //   }
-        //}
+        
+                brick.physicsBody = SKPhysicsBody(rectangleOfSize: brick.frame.size)
+                brick.physicsBody.dynamic = false
+                brick.physicsBody.categoryBitMask = brickCategory
+        
+            }
+        }
 
     }
     
@@ -298,9 +302,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         }
         
-        if ( notTheBall.categoryBitMask == edgeCategory ) {
-            
-        }
+        if ( notTheBall.categoryBitMask == edgeCategory ) { /* edge contact logic... */ }
         
         if ( notTheBall.categoryBitMask == bottomEdgeCategory ){
             
@@ -317,11 +319,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //println("\(self.children.count) and \(staticSize)")
             
             if ( self.children.count <= 5 ){
-                self.addBricks(self.frame.size)
+                addBricks(self.frame.size)
             }
             
-            println(self)
-            println(self.children)
+            //println(self)
+            //println(self.children)
+            println("\n")
             
         }
         
