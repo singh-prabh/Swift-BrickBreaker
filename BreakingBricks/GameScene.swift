@@ -24,9 +24,17 @@ import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    var bgR = 0x00
+    var bgG = 0x33
+    var bgB = 0x42
+    
+    func bgColor() -> Int {
+        return  ((bgR & 0xff) << 16) + ((bgG & 0xff) << 8) + (bgB & 0xff)
+    }
+    
     var paddle : SKSpriteNode
     var ball : SKSpriteNode
-    var ballVector :CGVector = CGVectorMake(9,-22)
+    //var ballVector :CGVector = CGVectorMake(9,-22)
     var playSFXBlip : SKAction = SKAction.playSoundFileNamed("blip.caf", waitForCompletion: false)
     var playSFXBrick : SKAction = SKAction.playSoundFileNamed("brickhit.caf", waitForCompletion: false)
     var label : SKLabelNode = SKLabelNode(fontNamed: "Futura Medium")
@@ -74,7 +82,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //staticSize = CGSizeMake(size.width, size.height)
         
         // blue background color
-        self.backgroundColor = colorize( 0x003342, alpha:1.0)
+        //self.backgroundColor = colorize( 0x003342, alpha:1.0)
+        self.backgroundColor = colorize( bgColor(), alpha:1.0)
+        
         
         //addBackground(size)
         
@@ -116,9 +126,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         var myPoint : CGPoint = CGPointMake(size.width/2, 120)
         ball.position = myPoint
         
-        var randomNumber = arc4random_uniform(50) - 25
-        var ballVector : CGVector = CGVectorMake( CGFloat(randomNumber), 15 )
-        
+        var randomX = arc4random_uniform(50)
+        var randomY = 33
+        var ballVector : CGVector = CGVectorMake( CGFloat(randomX), 33.09 )
         
         self.addChild(ball)
         
@@ -132,7 +142,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ball.physicsBody.linearDamping = 0
         ball.physicsBody.restitution = 1
         
-
         
         //var magic :SKEmitterNode = NSKeyedUnarchiver.unarchiveObjectWithFile(NSBundle.mainBundle().pathForResource("Magic", ofType: "sks")) as SKEmitterNode
         //magic.advanceSimulationTime(10)
@@ -150,7 +159,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         plasma.falloff = 0.5
         plasma.ambientColor = colorize( 0xFFFFFF, alpha:0.5)
         plasma.lightColor = SKColor.whiteColor()
-        plasma.position = CGPointMake(size.width/2,size.height-50)
+        plasma.position = CGPointMake(size.width/2,size.height+500)
         
         self.addChild(plasma)
         
@@ -291,6 +300,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             notTheBall = contact.bodyA
         }
         
+        
         if ( notTheBall.categoryBitMask == brickCategory ) {
            
             // remove the brick
@@ -299,15 +309,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             notTheBall.node.removeFromParent()
             self.runAction(playSFXBrick)
+            
+            bgR += 3
+            self.backgroundColor = colorize( bgColor(), alpha:1.0)
+            
 
         }
         
+        
         if ( notTheBall.categoryBitMask == edgeCategory ) { /* edge contact logic... */ }
+        
         
         if ( notTheBall.categoryBitMask == bottomEdgeCategory ){
             
             var end : EndScene = EndScene.sceneWithSize(size)
-            self.view.presentScene(end, transition: SKTransition.doorsCloseHorizontalWithDuration(0.5))
+            //self.view.presentScene(end, transition: SKTransition.doorsCloseHorizontalWithDuration(0.5))
             
         }
 
@@ -320,6 +336,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if ( self.children.count <= 5 ){
                 addBricks(self.frame.size)
+                
+                
             }
             
             //println(self)
