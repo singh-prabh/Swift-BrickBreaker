@@ -25,12 +25,134 @@ import SpriteKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     var bgR = 0x00
-    var bgG = 0x33
-    var bgB = 0x42
+    var bgG = 0x00
+    var bgB = 0x00
+    
+    var targetColor = 0x444444
     
     func bgColor() -> Int {
         return  ((bgR & 0xff) << 16) + ((bgG & 0xff) << 8) + (bgB & 0xff)
     }
+    
+    func walkTargetToDestinationColor(destination: Int, step: Int){
+        
+        var targetR = (targetColor & 0xFF0000) >> 16
+        var targetG = (targetColor & 0xFF00) >> 8
+        var targetB = (targetColor & 0xFF)
+        
+        var destR = (destination & 0xFF0000) >> 16
+        var destG = (destination & 0xFF00) >> 8
+        var destB = (destination & 0xFF)
+        
+        // walk in the target red towards the destination red
+        if ( targetR < destR ){
+            if ( targetR + step <= 0xFF ){
+                targetR += step
+            } else {
+                targetR = 0xFF
+            }
+        } else {
+            if ( targetR - step >= 0x00 ){
+                targetR -= step
+            } else {
+                targetR = 0x00
+            }
+        }
+        
+        // walk in the target green towards the destination green
+        if ( targetG < destG ){
+            if ( targetG + step <= 0xFF ){
+                targetG += step
+            } else {
+                targetG = 0xFF
+            }
+        } else {
+            if ( targetG - step >= 0x00 ){
+                targetG -= step
+            } else {
+                targetG = 0x00
+            }
+        }
+        
+        // walk in the target blue towards the destination blue
+        if ( targetB < destB ){
+            if ( targetB + step <= 0xFF ){
+                targetB += step
+            } else {
+                targetB = 0xFF
+            }
+        } else {
+            if ( targetB - step >= 0x00 ){
+                targetB -= step
+            } else {
+                targetB = 0x00
+            }
+        }
+        
+        self.targetColor =  ((targetR & 0xff) << 16) + ((targetG & 0xff) << 8) + (targetB & 0xff)
+        
+    }
+
+    
+    
+    func fadeToTargetColor(target: Int, step: Int){
+        // target is a hexdec Int
+        // step represents the speed at which each RGB should progress
+        
+        var targetR = (target & 0xFF0000) >> 16
+        var targetG = (target & 0xFF00) >> 8
+        var targetB = (target & 0xFF)
+        
+        
+        // walk in the background red towards the target
+        if ( self.bgR < targetR ){
+            if ( self.bgR + step <= 0xFF ){
+                self.bgR += step
+            } else {
+                self.bgR = 0xFF
+            }
+        } else {
+            if ( self.bgR - step >= 0x00 ){
+                self.bgR -= step
+            } else {
+                self.bgR = 0x00
+            }
+        }
+        
+        // walk in the background green towards the target
+        if ( self.bgG < targetG ){
+            if ( self.bgG + step <= 0xFF ){
+                self.bgG += step
+            } else {
+                self.bgG = 0xFF
+            }
+        } else {
+            if ( self.bgG - step >= 0x00 ){
+                self.bgG -= step
+            } else {
+                self.bgG = 0x00
+            }
+        }
+        
+        // walk in the background blue towards the target
+        if ( self.bgB < targetB ){
+            if ( self.bgB + step <= 0xFF ){
+                self.bgB += step
+            } else {
+                self.bgB = 0xFF
+            }
+        } else {
+            if ( self.bgB - step >= 0x00 ){
+                self.bgB -= step
+            } else {
+                self.bgB = 0x00
+            }
+        }
+        
+        self.backgroundColor = colorize( bgColor(), alpha:1.0)
+        
+    }
+    
     
     var paddle : SKSpriteNode
     var ball : SKSpriteNode
@@ -100,12 +222,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //label.physicsBody = SKPhysicsBody(rectangleOfSize: label.frame.size)
         
         labelNode.addChild(label)
-        
         self.addChild(labelNode)
-        
-        // not sure if this effects performance yet...
-        self.shouldRasterize = false
  
+        
         self.physicsBody = SKPhysicsBody(edgeLoopFromRect: self.frame)
         self.physicsBody.categoryBitMask = edgeCategory
         
@@ -126,9 +245,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         var myPoint : CGPoint = CGPointMake(size.width/2, 120)
         ball.position = myPoint
         
-        var randomX = arc4random_uniform(50)
-        var randomY = 33
-        var ballVector : CGVector = CGVectorMake( CGFloat(randomX), 33.09 )
+        //var randomX = CGFloat( arc4random_uniform(20) - 10 )
+        var ballVector : CGVector = CGVectorMake( 11, 15 )
         
         self.addChild(ball)
         
@@ -143,10 +261,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ball.physicsBody.restitution = 1
         
         
-        //var magic :SKEmitterNode = NSKeyedUnarchiver.unarchiveObjectWithFile(NSBundle.mainBundle().pathForResource("Magic", ofType: "sks")) as SKEmitterNode
-        //magic.advanceSimulationTime(10)
-        //ball.addChild(magic)
-        
+        // an error here signifies a bad vector Y value in the negatives from the line 129 random call... needs a fix
     }
     
     func addLight (size:CGSize){
@@ -165,7 +280,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //ball.shadowedBitMask = 1
         //ball.shadowCastBitMask = 1
-        //ball.lightingBitMask = 1
+        ball.lightingBitMask = 1
         
         paddle.shadowedBitMask = 1
         paddle.shadowCastBitMask = 1
@@ -243,10 +358,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                   
                 brick.shadowCastBitMask = 1
                 brick.lightingBitMask = 1
-                
-                //brick.position = CGPointMake(CGFloat(xPos), CGFloat(yPos))
-                //println("Brick position - xpos: \(xPos), ypos: \(yPos) || overall:\(brick.position)")
-                //println("SELF LOG FROM ADDBRICKS METHOD CALL: \(self) \n")
         
                 self.addChild(brick)
         
@@ -276,22 +387,49 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             self.paddle.position = new_pos
             
-            //addBall(size)
         }
+        
     }
     
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
+        
+        
+        // add a fade to color implementation
+        fadeToTargetColor(self.targetColor, step:1)
+        
+        
+        // level back fades
+        if ( AD.score == 18 ){
+            self.targetColor = 0x334400
+        } else if ( AD.score == 22 ){
+            self.targetColor = 0x337788
+        }
+
+        
+        
+        // each update fade the color
+        fadeToTargetColor(self.targetColor, step: 1)
+        
+        
+    }
+    
+    
+    func incrementalSpeedAdjustment(rate: CGFloat){
+        
+        // multiplies the angular velocity of the ball by the chosen rate, both x and y axes
+        
+        self.ball.physicsBody.velocity.dx = self.ball.physicsBody.velocity.dx * rate
+        self.ball.physicsBody.velocity.dy = self.ball.physicsBody.velocity.dy * rate
+        
     }
     
     
     func didBeginContact(contact: SKPhysicsContact!){
         
-        
-        //println(self)
-        
-        
         var notTheBall : SKPhysicsBody
+        
+        println( " dX: \(self.ball.physicsBody.velocity.dx) , dY: \(self.ball.physicsBody.velocity.dy)")
         
         // check the contacts and find the one thats not the ball
         if ( contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask ){
@@ -299,7 +437,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         } else {
             notTheBall = contact.bodyA
         }
-        
         
         if ( notTheBall.categoryBitMask == brickCategory ) {
            
@@ -310,20 +447,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             notTheBall.node.removeFromParent()
             self.runAction(playSFXBrick)
             
-            bgR += 3
-            self.backgroundColor = colorize( bgColor(), alpha:1.0)
-            
 
+            walkTargetToDestinationColor(0xAA0000, step:5)
+            incrementalSpeedAdjustment(1.02)
+            
         }
         
         
-        if ( notTheBall.categoryBitMask == edgeCategory ) { /* edge contact logic... */ }
+        if ( notTheBall.categoryBitMask == edgeCategory ) {
+            /* edge contact logic... */
+            walkTargetToDestinationColor(0x0099CC, step:33)
+        
+        }
         
         
         if ( notTheBall.categoryBitMask == bottomEdgeCategory ){
             
             var end : EndScene = EndScene.sceneWithSize(size)
-            //self.view.presentScene(end, transition: SKTransition.doorsCloseHorizontalWithDuration(0.5))
+            self.view.presentScene(end, transition: SKTransition.doorsCloseHorizontalWithDuration(0.5))
             
         }
 
@@ -332,18 +473,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             self.runAction(playSFXBlip)
             
-            //println("\(self.children.count) and \(staticSize)")
-            
             if ( self.children.count <= 5 ){
                 addBricks(self.frame.size)
-                
-                
             }
             
-            //println(self)
-            //println(self.children)
-            println("\n")
-            
+            walkTargetToDestinationColor(0x0099CC, step:3)
+            incrementalSpeedAdjustment(1.02)
+
         }
         
     }
